@@ -1,14 +1,17 @@
 import React, { FC, useEffect, useState, useCallback  } from 'react';
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { Container, Grid, TextField, Box, InputAdornment } from '@mui/material';
+import {Search as SearchIcon} from '@mui/icons-material/';
 import { ICountry } from '../../interfaces/country';
 import { CountryService } from '../../services/country';
 import { RootState } from '../../redux/strore';
-import { setAllCountry, setError, setLoader, selectCountry } from '../../redux/country';
+import { setAllCountry, setError, setLoader, selectCountry, searchCountry } from '../../redux/country';
+import CountryCardItem from '../../components/countryCardItem';
 
 const CountryPage: FC = () => {
     const navigate = useNavigate();
-    const {value: countryList, isLoading: loading} = useSelector((state: RootState) => state.country);
+    const {value: countryList, isLoading: loading, searchList: values} = useSelector((state: RootState) => state.country);
     const dispatch = useDispatch();
 
     const fetchList = useCallback(async () => {
@@ -33,27 +36,41 @@ const CountryPage: FC = () => {
         navigate('/user');
       }
 
+      const onChange = (e: any) => {
+        const {name, value} = e.target;
+        dispatch(searchCountry(value));
+      }
+
       if (loading) {
         return <div>Loading data..</div>
       }
 
       return (
-          <div>
-              Country page
+          <Container>
+            <Box sx={{ marginY:2 }} >
+              <TextField 
+                id="outlined-basic" 
+                label="Rechercher un pays" 
+                variant="outlined" 
+                onChange={onChange}
+                InputProps={{
+                  startAdornment: <InputAdornment position="start"><SearchIcon/></InputAdornment>,
+                }}
+                />
+            </Box>
+            <Grid container rowSpacing={2}>
               {
-                countryList.map((data: ICountry, index: number) => {
+                values.map((data: ICountry, index: number) => {
                   return (
-                    <div key={index}>
-                      <p>id: {index}</p>
-                      <p>name: {data.name}</p>
-                      <p>flag: {data.flags.png}</p>
-                      <button onClick={() =>onClick(data)}>Get user</button>
-                      <hr/>
-                    </div>
+                    <Grid key={index} item xs={12} sm={3}>
+                      <CountryCardItem data={data} onClick={() => onClick(data)}/>
+                    </Grid>
                   )
                 })
               }
-          </div>
+            </Grid>
+
+          </Container>
       );
 }
 

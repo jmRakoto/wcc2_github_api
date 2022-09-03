@@ -6,13 +6,15 @@ import { defaultIUser } from '../interfaces/user';
 
 export class UserService {
     
-  static getAllUser = async (country: ICountry, page: number): Promise<any> => {
+  static getAllUser = async (country: String, page: number): Promise<any> => {
     
     const octokit = new Octokit({
       auth: config.gitHub.token
     });
 
     try {
+      console.log(country);
+      
       // TODO: sort by joined date
       const res = await octokit.request(`GET /search/users?q=${encodeURIComponent(`location:${country}`)}&page=${page}&per_page=50`, {});
       

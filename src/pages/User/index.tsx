@@ -79,7 +79,7 @@ const UserPage: FC = () => {
               </div>
             )
           })
-          }
+        }
       </div>
     );
 }
