@@ -17,6 +17,7 @@ export class UserService {
       
       // TODO: sort by joined date
       const res = await octokit.request(`GET /search/users?q=${encodeURIComponent(`location:${country}`)}&page=${page}&per_page=50`, {});
+      console.log(res.data.items[0]);
       
       return res.data as IUser;
     } catch (err) {

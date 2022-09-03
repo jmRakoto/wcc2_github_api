@@ -69,7 +69,6 @@ const CountryPage: FC = () => {
                 })
               }
             </Grid>
-
           </Container>
       );
 }
