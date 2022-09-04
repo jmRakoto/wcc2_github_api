@@ -18,6 +18,7 @@ import { RootState } from '../../redux/strore';
 import { setAllUser, setError, setLoader, setPerPage, setPage } from '../../redux/user';
 import { UserService } from '../../services/user';
 import moment from 'moment';
+import CustomizedDialogs from '../../components/dialog';
 
 const UserPage: FC = () => {
   const {value:coutryList, country: country} = useSelector((state: RootState) => state.country);
@@ -26,33 +27,37 @@ const UserPage: FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const [searchValue, setSearchValue] = useState<String>('');
+  const [searchValue, setSearchValue] = useState<string>('');
+  const [openProfilDialog, setOpenProfilDialog] = useState<boolean>(false);
+  const [profileData, setProfileData] = useState<IItem>();
 
   const fetchList = useCallback(async () => {
     dispatch(setLoader(true));
     try {
-      const datas: IUser = await UserService.getAllUser(country.name, page, perPage);
+      const datas: IUser = await UserService.getAllUser(country.name, page, perPage, searchValue);
       dispatch(setAllUser(datas))
     } catch (error) {
       dispatch(setError({type: 'x', value: true}));
     } finally {
       dispatch(setLoader(false));
     }
-  }, [country, page, perPage]);
+  }, [country, page, perPage, searchValue]);
 
   useEffect(() => {
     if(country.name != '') {
-      fetchList();
+      fetchList();  
     } else {
       navigate('/country', {replace: true});
     }
-  }, [fetchList]);
+  }, [country, page, perPage]);
 
   const onChangeField = (e: any) => {
     const { name, value } = e.target;
-    // setSearchValue(value);
-    console.log(value);
-    
+    setSearchValue(value);
+  }
+
+  const onSearch = () => {
+    fetchList();
   }
 
   const onSelectCountry = (e: any) => {
@@ -66,7 +71,8 @@ const UserPage: FC = () => {
   }
 
   const onClickProfil= (data: IItem) =>  {
-    console.log(data);
+    setProfileData(data);
+    setOpenProfilDialog(true);
   }
 
   const handleChangePage = useCallback((e: any, page: number) => {
@@ -95,6 +101,7 @@ const UserPage: FC = () => {
                 label="Rechercher" 
                 variant="outlined"
                 fullWidth={true}
+                value={searchValue}
                 style={{
                   backgroundColor: "white"
                 }}
@@ -125,7 +132,7 @@ const UserPage: FC = () => {
             </FormControl>
             </Grid>
             <Grid item xs={12} sm={3}>
-              <Button disabled={loading} color="primary" variant="contained" fullWidth={true}>
+              <Button disabled={loading} color="primary" variant="contained" fullWidth={true} onClick={onSearch}>
                 Rechercher
               </Button>
             </Grid>
@@ -139,7 +146,7 @@ const UserPage: FC = () => {
                 <TableRow>
                   <TableCell>Avatar</TableCell>
                   <TableCell>Username</TableCell>
-                  <TableCell>Join date</TableCell>
+                  {/* <TableCell>Join date</TableCell> */}
                   <TableCell align="right">Profil</TableCell>
                 </TableRow>
               </TableHead>
@@ -157,7 +164,7 @@ const UserPage: FC = () => {
                       />
                     </TableCell>
                     <TableCell>{row.login}</TableCell>
-                    <TableCell>{formatedDate(row.join_date)}</TableCell>
+                    {/* <TableCell>{formatedDate(row.join_date)}</TableCell> */}
                     <TableCell align="right">
                       <Button size="small" color="primary" variant="contained" onClick={() => onClickProfil(row)}>
                         Profil
@@ -178,6 +185,7 @@ const UserPage: FC = () => {
             />
           </TableContainer>
         </Box>
+        {profileData && <CustomizedDialogs setOpen={setOpenProfilDialog} open={openProfilDialog} user={profileData} />}
       </Container>
     );
 }

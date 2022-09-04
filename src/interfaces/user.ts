@@ -2,7 +2,8 @@ export interface IItem {
     id: number;
     login: string;
     avatar_url: string;
-    join_date: string;
+    // join_date: string;
+    html_url: string;
     // location: string;
     // created_at: string;
 }
@@ -19,5 +20,6 @@ export const defaultUser: IItem = {
     id: 0,
     login: "",
     avatar_url: "",
-    join_date: "",
+    // join_date: "",
+    html_url: "",
 }
