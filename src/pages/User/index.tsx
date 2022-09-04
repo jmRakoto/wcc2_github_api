@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { 
   Container, Grid, TextField, Box, InputAdornment,  
   Button, InputLabel, MenuItem, Table, TableBody,
-  TableCell, TableHead, TableRow, Paper, TableContainer, Avatar
+  TableCell, TableHead, TableRow, Paper, TableContainer, Avatar, TablePagination
 } from '@mui/material';
 import {Search as SearchIcon} from '@mui/icons-material/';
 import FormControl from '@mui/material/FormControl';
@@ -15,12 +15,14 @@ import { ICountry } from '../../interfaces/country';
 import { IItem } from '../../interfaces/user';
 import { selectCountry } from '../../redux/country';
 import { RootState } from '../../redux/strore';
-import { setAllUser, setError, setLoader } from '../../redux/user';
+import { setAllUser, setError, setLoader, setPerPage, setPage } from '../../redux/user';
 import { UserService } from '../../services/user';
+import moment from 'moment';
 
 const UserPage: FC = () => {
   const {value:coutryList, country: country} = useSelector((state: RootState) => state.country);
-  const {value: userList, isLoading: loading} = useSelector((state: RootState) => state.user);
+  const {value: userList, isLoading: loading, page, perPage} = useSelector((state: RootState) => state.user);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -29,14 +31,14 @@ const UserPage: FC = () => {
   const fetchList = useCallback(async () => {
     dispatch(setLoader(true));
     try {
-      const datas: IUser = await UserService.getAllUser(country.name, 1);
+      const datas: IUser = await UserService.getAllUser(country.name, page, perPage);
       dispatch(setAllUser(datas))
     } catch (error) {
       dispatch(setError({type: 'x', value: true}));
     } finally {
       dispatch(setLoader(false));
     }
-  }, [country]);
+  }, [country, page, perPage]);
 
   useEffect(() => {
     if(country.name != '') {
@@ -66,6 +68,18 @@ const UserPage: FC = () => {
   const onClickProfil= (data: IItem) =>  {
     console.log(data);
   }
+
+  const handleChangePage = useCallback((e: any, page: number) => {
+    dispatch(setPage(page));
+  }, [])
+
+  const handleChangeRowsPerPage = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch(setPerPage(parseInt(event.target.value)));
+  }, [])
+
+  const formatedDate = useCallback((date: string) => {
+    return moment(date).format('LL')
+  }, [])
 
   if (loading) {
     return <div>Loading data..</div>
@@ -102,6 +116,7 @@ const UserPage: FC = () => {
                   style={{
                     backgroundColor: "white"
                   }}
+                  disabled={loading}
                 >
                   {coutryList.map((data: ICountry, index: number) => (
                     <MenuItem key={index} value={data.name}>{data.name}</MenuItem>
@@ -110,7 +125,7 @@ const UserPage: FC = () => {
             </FormControl>
             </Grid>
             <Grid item xs={12} sm={3}>
-              <Button size="small" color="primary" variant="contained" fullWidth={true}>
+              <Button disabled={loading} color="primary" variant="contained" fullWidth={true}>
                 Rechercher
               </Button>
             </Grid>
@@ -123,7 +138,8 @@ const UserPage: FC = () => {
               <TableHead>
                 <TableRow>
                   <TableCell>Avatar</TableCell>
-                  <TableCell align="center">Username</TableCell>
+                  <TableCell>Username</TableCell>
+                  <TableCell>Join date</TableCell>
                   <TableCell align="right">Profil</TableCell>
                 </TableRow>
               </TableHead>
@@ -140,7 +156,8 @@ const UserPage: FC = () => {
                         sx={{ width: 56, height: 56 }}
                       />
                     </TableCell>
-                    <TableCell align="center">{row.login}</TableCell>
+                    <TableCell>{row.login}</TableCell>
+                    <TableCell>{formatedDate(row.join_date)}</TableCell>
                     <TableCell align="right">
                       <Button size="small" color="primary" variant="contained" onClick={() => onClickProfil(row)}>
                         Profil
@@ -150,6 +167,15 @@ const UserPage: FC = () => {
                 ))}
               </TableBody>
             </Table>
+            <TablePagination
+              rowsPerPageOptions={[5, 10, 25]}
+              component="div"
+              count={userList.total_count}
+              rowsPerPage={perPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
           </TableContainer>
         </Box>
       </Container>

@@ -11,14 +11,18 @@ interface UserState {
     value: IUser;
     user: IItem | any;
     isLoading: boolean;
+    page: number;
     error: IError;
+    perPage: number;
 }
 
 const initialState: UserState = {
     value: defaultIUser,
     user: defaultUser,
     isLoading: false,
-    error: {type: '', value: false}
+    error: {type: '', value: false},
+    page: 1,
+    perPage: 10,
 }
 
 export const user = createSlice({
@@ -37,8 +41,14 @@ export const user = createSlice({
         selectUser: (state: UserState, action: PayloadAction<IItem>) => {
             state.user = action.payload;
         },
+        setPage: (state: UserState, action: PayloadAction<number>) => {
+            state.page = action.payload;
+        },
+        setPerPage: (state: UserState, action: PayloadAction<number>) => {
+            state.perPage = action.payload;
+        },
     }
 });
 
-export const { setLoader, setError, setAllUser, selectUser } = user.actions;
+export const { setLoader, setError, setAllUser, selectUser, setPage, setPerPage } = user.actions;
 export default user.reducer;
