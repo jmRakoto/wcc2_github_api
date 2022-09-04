@@ -19,6 +19,7 @@ import { setAllUser, setError, setLoader, setPerPage, setPage } from '../../redu
 import { UserService } from '../../services/user';
 import moment from 'moment';
 import CustomizedDialogs from '../../components/dialog';
+import { LoaderTable } from '../../components/loader';
 
 const UserPage: FC = () => {
   const {value:coutryList, country: country} = useSelector((state: RootState) => state.country);
@@ -87,10 +88,6 @@ const UserPage: FC = () => {
     return moment(date).format('LL')
   }, [])
 
-  if (loading) {
-    return <div>Loading data..</div>
-  }
-
   return (
       <Container>
         <Box sx={{ marginY:2, padding:2 }} bgcolor="#F6F5F8">
@@ -146,33 +143,34 @@ const UserPage: FC = () => {
                 <TableRow>
                   <TableCell>Avatar</TableCell>
                   <TableCell>Username</TableCell>
-                  {/* <TableCell>Join date</TableCell> */}
                   <TableCell align="right">Profil</TableCell>
                 </TableRow>
               </TableHead>
-              <TableBody>
-                {userList.items.map((row: IItem, index: number) => (
-                  <TableRow
-                    key={index}
-                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                  >
-                    <TableCell component="th" scope="row">
-                      <Avatar
-                        alt={row.avatar_url}
-                        src={row.avatar_url}
-                        sx={{ width: 56, height: 56 }}
-                      />
-                    </TableCell>
-                    <TableCell>{row.login}</TableCell>
-                    {/* <TableCell>{formatedDate(row.join_date)}</TableCell> */}
-                    <TableCell align="right">
-                      <Button size="small" color="primary" variant="contained" onClick={() => onClickProfil(row)}>
-                        Profil
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
+              {
+                loading?<LoaderTable/>: 
+                  <TableBody>
+                  {userList.items.map((row: IItem, index: number) => (
+                    <TableRow
+                      key={index}
+                      sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                    >
+                      <TableCell component="th" scope="row">
+                        <Avatar
+                          alt={row.avatar_url}
+                          src={row.avatar_url}
+                          sx={{ width: 56, height: 56 }}
+                        />
+                      </TableCell>
+                      <TableCell>{row.login}</TableCell>
+                      <TableCell align="right">
+                        <Button size="small" color="primary" variant="contained" onClick={() => onClickProfil(row)}>
+                          Profil
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              }
             </Table>
             <TablePagination
               rowsPerPageOptions={[5, 10, 25]}

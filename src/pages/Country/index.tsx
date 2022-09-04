@@ -1,13 +1,14 @@
 import React, { FC, useEffect, useState, useCallback  } from 'react';
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { Container, Grid, TextField, Box, InputAdornment } from '@mui/material';
+import { Container, Grid, TextField, Box, InputAdornment, CircularProgress } from '@mui/material';
 import {Search as SearchIcon} from '@mui/icons-material/';
 import { ICountry } from '../../interfaces/country';
 import { CountryService } from '../../services/country';
 import { RootState } from '../../redux/strore';
 import { setAllCountry, setError, setLoader, selectCountry, searchCountry } from '../../redux/country';
 import CountryCardItem from '../../components/countryCardItem';
+import { Loader } from '../../components/loader';
 
 const CountryPage: FC = () => {
     const navigate = useNavigate();
@@ -42,7 +43,7 @@ const CountryPage: FC = () => {
       }
 
       if (loading) {
-        return <div>Loading data..</div>
+        return <Loader />
       }
 
       return (
