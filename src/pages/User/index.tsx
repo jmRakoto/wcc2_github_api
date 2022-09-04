@@ -103,6 +103,8 @@ const UserPage: FC = () => {
                   backgroundColor: "white"
                 }}
                 onChange={onChangeField}
+                error={searchValue !== '' && searchValue.length < 2}
+                helperText="Min char: 2"
                 InputProps={{
                   startAdornment: <InputAdornment position="start"><SearchIcon/></InputAdornment>,
                 }}
