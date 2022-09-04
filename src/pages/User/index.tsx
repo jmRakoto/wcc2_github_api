@@ -131,7 +131,7 @@ const UserPage: FC = () => {
             </FormControl>
             </Grid>
             <Grid item xs={12} sm={3}>
-              <Button disabled={loading} color="primary" variant="contained" fullWidth={true} onClick={onSearch}>
+              <Button disabled={loading || (searchValue !== '' && searchValue.length < 2)} color="primary" variant="contained" fullWidth={true} onClick={onSearch}>
                 Rechercher
               </Button>
             </Grid>
