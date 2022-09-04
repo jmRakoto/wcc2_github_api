@@ -7,4 +7,4 @@
 
 ## Or check url to test
 
--[wcc](https://wcc-s1.hob-dev.mg)
+-[wcc-S1](https://wccs1.hob-dev.mg)
